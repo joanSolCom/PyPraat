@@ -101,6 +101,9 @@ class TextGrid:
 	def getAnnotations(self, tier, start, end):
 		return self.tiers.getAnnotations(tier, start, end)
 
+	def getTier(self, name):
+		return self.tiers.getTier(name)
+
 	def writeTextGrid(self, path):
 		#ToDo
 		pass
@@ -153,23 +156,32 @@ class Annotation():
 		self.xmin = start
 		self.xmax = end
 		if features:
-			self.features = Features(features=features, head=head)
+			self.text = Text(features=features, head=head)
 		else:
-			self.features = Features(rawFeatures=rawFeatures)
+			self.text = Text(rawFeatures=rawFeatures)
+
+		self.head = self.text.head
+
 
 	def getFeature(self, featureName):
-		return self.features.getFeature(featureName)
+		return self.text.getFeature(featureName)
 
 	def addFeature(self, key, value):
-		self.features.addFeature(key, value)
+		self.text.addFeature(key, value)
 
 	def __str__(self):
-		return "Start:"+str(self.xmin)+ " End:"+str(self.xmax)+ " "+ str(self.features)
-
+		if self.head:
+			return "Start:"+str(self.xmin)+ " End:"+str(self.xmax)+ " HEAD:"+ str(self.head) + "\nFEATURES\n"+str(self.text.features)+"\n"
+		else:
+			return "Start:"+str(self.xmin)+ " End:"+str(self.xmax)+ " HEAD: No Head" + "\nFEATURES\n"+str(self.text.features) + "\n"
+	
 	def __repr__(self):
-		return "Start:"+str(self.xmin)+ " End:"+str(self.xmax)+ " "+ str(self.features)
+		if self.head:
+			return "Start:"+str(self.xmin)+ " End:"+str(self.xmax)+ " HEAD:"+ str(self.head) + "\nFEATURES\n"+str(self.text.features)+"\n"
+		else:
+			return "Start:"+str(self.xmin)+ " End:"+str(self.xmax)+ " HEAD: No Head" + "\nFEATURES\n"+str(self.text.features) + "\n"
 
-class Features():
+class Text():
 
 	def __init__(self, rawFeatures=None, features=None, head=None):
 		self.features = {}
@@ -182,9 +194,9 @@ class Features():
 
 		if rawFeatures:
 			self.rawFeatures = rawFeatures
-			self.extractFeatures()
+			self.extractText()
 
-	def extractFeatures(self):
+	def extractText(self):
 		if self.rawFeatures == '""':
 			pass
 		
@@ -216,17 +228,10 @@ class Features():
 		self.features[key] = value
 			
 	def __str__(self):
-		if self.head:
-			return "HEAD:"+self.head + " FEATURES:" + str(self.features) 
-		else:
-			return "HEAD:No Head" + " FEATURES:" + str(self.features) 
-
+		return "FEATURES: " + str(self.features) 
 
 	def __repr__(self):
-		if self.head:
-			return "HEAD:"+self.head + " FEATURES:" + str(self.features) 
-		else:
-			return "HEAD:No Head" + " FEATURES:" + str(self.features) 
+		return "FEATURES: " + str(self.features) 
 
 if __name__ == '__main__':
 
